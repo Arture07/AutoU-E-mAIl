@@ -21,13 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkIcon = document.getElementById('check-icon');
     const emailTextArea = document.getElementById('email-text');
 
-    // --- Lógica de Troca de Abas ---
+    // --- Troca de Abas ---
     const setActiveTab = (activeTab, inactiveTab) => {
-        // Estilos da aba ativa
         activeTab.classList.add('text-violet-600', 'border-violet-600', 'border-b-2', 'font-semibold');
         activeTab.classList.remove('text-gray-500', 'font-medium');
 
-        // Estilos da aba inativa
         inactiveTab.classList.add('text-gray-500', 'font-medium');
         inactiveTab.classList.remove('text-violet-600', 'border-violet-600', 'border-b-2', 'font-semibold');
     };
@@ -36,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         contentText.classList.remove('hidden');
         contentFile.classList.add('hidden');
         setActiveTab(tabText, tabFile);
-        currentFile = null; // Limpa o arquivo se voltar para a aba de texto
+        currentFile = null;
         fileNameDisplay.textContent = '';
     });
 
@@ -46,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setActiveTab(tabFile, tabText);
     });
 
-    // --- Lógica de Upload de Arquivo ---
+    // --- Upload de Arquivo ---
     const handleFile = (file) => {
         if (file && (file.type === 'text/plain' || file.type === 'application/pdf')) {
             currentFile = file;
@@ -77,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     dragArea.addEventListener('drop', e => handleFile(e.dataTransfer.files[0]));
 
-    // --- Lógica de Análise ---
+    // --- Análise ---
     analyzeButton.addEventListener('click', async () => {
         resultSection.classList.add('hidden');
         analyzeButton.textContent = 'Analisando...';
@@ -86,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let body;
         let headers = {};
 
-        if (!contentFile.classList.contains('hidden')) { // Aba de arquivo
+        if (!contentFile.classList.contains('hidden')) {
             if (!currentFile) {
                 alert('Por favor, selecione um arquivo.');
                 analyzeButton.textContent = 'Analisar E-mail';
@@ -95,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             body = new FormData();
             body.append('file', currentFile);
-        } else { // Aba de texto
+        } else {
             const text = emailTextArea.value;
             if (!text.trim()) {
                 alert('Por favor, insira o texto do e-mail.');
@@ -128,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- Lógica de Copiar ---
+    // --- Copiar ---
     copyButton.addEventListener('click', () => {
         navigator.clipboard.writeText(suggestionResult.textContent).then(() => {
             copyIcon.classList.add('hidden');

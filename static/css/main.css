@@ -1,0 +1,34 @@
+:root {
+    --autou-violet: #8b5cf6;
+    --autou-magenta: #d946ef;
+    --autou-orange: #f97316;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+.autou-gradient-text {
+    background-image: linear-gradient(to right, var(--autou-violet), var(--autou-magenta), var(--autou-orange));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.autou-gradient-bg {
+    background-image: linear-gradient(to right, var(--autou-violet), var(--autou-magenta), var(--autou-orange));
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15);
+}
+
+.drag-area-border-active {
+    border-color: var(--autou-violet);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
