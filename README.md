@@ -54,19 +54,22 @@ A aplicação classifica os e-mails em duas categorias principais:
 ```bash
 git clone https://github.com/Arture07/AutoU-E-mAIl
 cd AutoU-E-mAIl
-
+```
 ### 🔹 2. Instale as Dependências
 Crie um ambiente virtual (recomendado) e instale as bibliotecas necessárias.
-
+```bash
 python -m venv venv
 source venv/bin/activate  # No Windows: venv\Scripts\activate
 pip install -r requirements.txt
-
+```
 ### 🔹 3. Configure a Chave da API
 Acesse o Google AI Studio para gerar sua chave gratuita.
 
 Abra o arquivo .env e cole sua chave de API:
-**GEMINI_API_KEY="SUA_CHAVE_DE_API_AQUI"**
-
+```bash
+GEMINI_API_KEY="SUA_CHAVE_DE_API_AQUI"
+```
 ### 🔹 4. Rode a Aplicação
+```bash
 flask run
+```
