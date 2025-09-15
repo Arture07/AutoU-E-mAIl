@@ -71,5 +71,6 @@ GEMINI_API_KEY="SUA_CHAVE_DE_API_AQUI"
 ```bash
 flask run
 ```
-<br>
+<br> 
+
 *Projeto desenvolvido por Artur Kuzma Marques como parte do Case Prático da AutoU.*
