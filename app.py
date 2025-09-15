@@ -3,7 +3,8 @@ import os
 import google.generativeai as genai
 import json
 from dotenv import load_dotenv
-import fitz  # PyMuPDF
+import fitz
+import re
 
 # Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
@@ -19,7 +20,13 @@ try:
 except ValueError as e:
     print(f"Erro de configuração: {e}")
 
-# Função para chamar a API do Gemini (sem alterações)
+def preprocess_text(text):
+    """Realiza uma limpeza básica no texto antes de enviá-lo para a IA."""
+    text = text.lower()
+    text = re.sub(r'[^\w\s]', '', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
+
 def call_gemini_api(text):
     try:
         model = genai.GenerativeModel('gemini-1.5-flash-latest')
@@ -43,7 +50,6 @@ def call_gemini_api(text):
         print(f"Erro ao chamar a API do Gemini: {e}")
         return {"error": "Falha ao processar a solicitação com a IA."}
 
-# Função para extrair texto de arquivos
 def extract_text_from_file(file_storage):
     if file_storage.filename.endswith('.pdf'):
         try:
@@ -71,45 +77,29 @@ def index():
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
-    # Adicionando logs para depuração
-    print("\n--- Nova Requisição /analyze ---")
-    print(f"Content-Type: {request.content_type}")
-    print(f"É JSON? {request.is_json}")
-    print(f"Arquivos na requisição: {list(request.files.keys())}")
-
     email_text = ""
-    # Verifica se a requisição é JSON (para a aba de texto)
     if request.is_json:
-        print("-> Rota: Requisição identificada como JSON.")
         data = request.get_json()
         email_text = data.get('text', '')
-    # Verifica se a requisição contém um arquivo (para a aba de anexo)
     elif 'file' in request.files:
-        print("-> Rota: Requisição identificada com um arquivo.")
         file = request.files['file']
         if file.filename == '':
-            print("-> Erro: Nenhum arquivo selecionado (nome do arquivo vazio).")
             return jsonify({'error': 'Nenhum arquivo selecionado.'}), 400
-        
-        print(f"-> Info: Processando arquivo '{file.filename}'")
         email_text = extract_text_from_file(file)
         if email_text is None:
-            print("-> Erro: Não foi possível extrair texto do arquivo.")
             return jsonify({'error': 'Não foi possível ler o arquivo. Verifique o formato.'}), 400
     else:
-        print("-> Erro: Formato de requisição inválido (nem JSON, nem arquivo).")
         return jsonify({'error': 'Formato de requisição inválido.'}), 400
 
-    if not email_text.strip():
-        print("-> Erro: Texto do e-mail está vazio após o processamento.")
+    if not email_text:
         return jsonify({'error': 'Nenhum texto de e-mail fornecido.'}), 400
 
-    print(f"-> Sucesso: Enviando texto para a IA: '{email_text[:100]}...'")
-    ai_response = call_gemini_api(email_text)
+    processed_text = preprocess_text(email_text)
+    print(f"Texto pré-processado enviado para a IA: '{processed_text[:100]}...'")
+
+    ai_response = call_gemini_api(processed_text)
 
     if "error" in ai_response:
         return jsonify(ai_response), 500
     
-    print("-> Sucesso: Análise concluída.")
-    print("---------------------------------\n")
     return jsonify(ai_response)
