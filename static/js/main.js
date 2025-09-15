@@ -1,155 +1,142 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Elementos das abas
+    // Elementos das Abas
     const tabText = document.getElementById('tab-text');
     const tabFile = document.getElementById('tab-file');
     const contentText = document.getElementById('content-text');
     const contentFile = document.getElementById('content-file');
 
-    // Elementos de input
-    const emailTextarea = document.getElementById('email-text');
+    // Elementos do Upload
     const dragArea = document.getElementById('drag-area');
-    const fileInput = document.getElementById('file-upload');
+    const fileUpload = document.getElementById('file-upload');
     const fileNameDisplay = document.getElementById('file-name');
-    let uploadedFile = null;
+    let currentFile = null;
 
-    // Elementos de ação e resultado
+    // Elementos de Ação e Resultado
     const analyzeButton = document.getElementById('analyze-button');
     const resultSection = document.getElementById('result-section');
     const classificationResult = document.getElementById('classification-result');
     const suggestionResult = document.getElementById('suggestion-result');
     const copyButton = document.getElementById('copy-button');
+    const copyIcon = document.getElementById('copy-icon');
+    const checkIcon = document.getElementById('check-icon');
+    const emailTextArea = document.getElementById('email-text');
 
-    // Lógica para trocar de abas
+    // --- Lógica de Troca de Abas ---
+    const setActiveTab = (activeTab, inactiveTab) => {
+        // Estilos da aba ativa
+        activeTab.classList.add('text-violet-600', 'border-violet-600', 'border-b-2', 'font-semibold');
+        activeTab.classList.remove('text-gray-500', 'font-medium');
+
+        // Estilos da aba inativa
+        inactiveTab.classList.add('text-gray-500', 'font-medium');
+        inactiveTab.classList.remove('text-violet-600', 'border-violet-600', 'border-b-2', 'font-semibold');
+    };
+
     tabText.addEventListener('click', () => {
-        tabText.classList.add('text-white', 'border-blue-500', 'font-semibold');
-        tabText.classList.remove('text-gray-400', 'font-medium');
-        tabFile.classList.remove('text-white', 'border-blue-500', 'font-semibold');
-        tabFile.classList.add('text-gray-400', 'font-medium');
         contentText.classList.remove('hidden');
         contentFile.classList.add('hidden');
+        setActiveTab(tabText, tabFile);
+        currentFile = null; // Limpa o arquivo se voltar para a aba de texto
+        fileNameDisplay.textContent = '';
     });
 
     tabFile.addEventListener('click', () => {
-        tabFile.classList.add('text-white', 'border-blue-500', 'font-semibold');
-        tabFile.classList.remove('text-gray-400', 'font-medium');
-        tabText.classList.remove('text-white', 'border-blue-500', 'font-semibold');
-        tabText.classList.add('text-gray-400', 'font-medium');
         contentFile.classList.remove('hidden');
         contentText.classList.add('hidden');
+        setActiveTab(tabFile, tabText);
     });
 
-    // Lógica para upload de arquivo (arrastar e soltar)
-    dragArea.addEventListener('click', () => fileInput.click());
-    
-    dragArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dragArea.classList.add('drag-area-border-hover');
-    });
-
-    dragArea.addEventListener('dragleave', () => {
-        dragArea.classList.remove('drag-area-border-hover');
-    });
-    
-    dragArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dragArea.classList.remove('drag-area-border-hover');
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            handleFile(files[0]);
-        }
-    });
-
-    fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            handleFile(e.target.files[0]);
-        }
-    });
-
-    function handleFile(file) {
-        if (file.type === 'text/plain' || file.type === 'application/pdf') {
-            uploadedFile = file;
+    // --- Lógica de Upload de Arquivo ---
+    const handleFile = (file) => {
+        if (file && (file.type === 'text/plain' || file.type === 'application/pdf')) {
+            currentFile = file;
             fileNameDisplay.textContent = file.name;
         } else {
-            alert('Por favor, selecione um arquivo .txt ou .pdf');
-            uploadedFile = null;
-            fileNameDisplay.textContent = '';
+            fileNameDisplay.textContent = 'Formato inválido. Use .txt ou .pdf';
+            currentFile = null;
         }
-    }
+    };
 
-    // Lógica do botão "Analisar" com chamada ao backend
+    dragArea.addEventListener('click', () => fileUpload.click());
+    fileUpload.addEventListener('change', () => handleFile(fileUpload.files[0]));
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dragArea.addEventListener(eventName, e => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dragArea.addEventListener(eventName, () => dragArea.classList.add('drag-area-border-active'));
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dragArea.addEventListener(eventName, () => dragArea.classList.remove('drag-area-border-active'));
+    });
+
+    dragArea.addEventListener('drop', e => handleFile(e.dataTransfer.files[0]));
+
+    // --- Lógica de Análise ---
     analyzeButton.addEventListener('click', async () => {
-        const isTextTabActive = !contentText.classList.contains('hidden');
-        let requestBody;
-        let requestHeaders = {};
+        resultSection.classList.add('hidden');
+        analyzeButton.textContent = 'Analisando...';
+        analyzeButton.disabled = true;
 
-        if (isTextTabActive) {
-            const emailContent = emailTextarea.value;
-            if (!emailContent.trim()) {
-                alert('Por favor, cole o conteúdo do e-mail.');
-                return;
-            }
-            requestHeaders['Content-Type'] = 'application/json';
-            requestBody = JSON.stringify({ text: emailContent.trim() });
-        } else {
-            if (!uploadedFile) {
+        let body;
+        let headers = {};
+
+        if (!contentFile.classList.contains('hidden')) { // Aba de arquivo
+            if (!currentFile) {
                 alert('Por favor, selecione um arquivo.');
+                analyzeButton.textContent = 'Analisar E-mail';
+                analyzeButton.disabled = false;
                 return;
             }
-            // Para upload de arquivo, usamos FormData
-            const formData = new FormData();
-            formData.append('file', uploadedFile);
-            requestBody = formData;
-            // NÃO definimos Content-Type aqui, o navegador faz isso
+            body = new FormData();
+            body.append('file', currentFile);
+        } else { // Aba de texto
+            const text = emailTextArea.value;
+            if (!text.trim()) {
+                alert('Por favor, insira o texto do e-mail.');
+                analyzeButton.textContent = 'Analisar E-mail';
+                analyzeButton.disabled = false;
+                return;
+            }
+            body = JSON.stringify({ text });
+            headers['Content-Type'] = 'application/json';
         }
 
-        // Ativa o estado de carregamento
-        analyzeButton.disabled = true;
-        analyzeButton.textContent = 'Analisando...';
-        resultSection.classList.add('hidden');
-        
         try {
-            // Faz a chamada (fetch) para o endpoint /analyze no backend
-            const response = await fetch('/analyze', {
-                method: 'POST',
-                headers: requestHeaders,
-                body: requestBody,
-            });
+            const response = await fetch('/analyze', { method: 'POST', headers, body });
+            const data = await response.json();
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Ocorreu um erro no servidor.');
+            if (response.ok) {
+                classificationResult.textContent = data.classification || 'N/A';
+                suggestionResult.textContent = data.suggestion || 'Nenhuma sugestão disponível.';
+                resultSection.classList.remove('hidden');
+                resultSection.classList.add('fade-in');
+            } else {
+                throw new Error(data.error || 'Ocorreu um erro no servidor.');
             }
-
-            const result = await response.json();
-            
-            // Atualiza a interface com os dados recebidos do backend
-            classificationResult.textContent = result.classification;
-            suggestionResult.textContent = result.suggestion;
-            resultSection.classList.remove('hidden');
-
         } catch (error) {
-            console.error('Erro ao analisar e-mail:', error);
-            alert(`Não foi possível concluir a análise: ${error.message}`);
+            suggestionResult.textContent = `Erro: ${error.message}`;
+            resultSection.classList.remove('hidden');
         } finally {
-            // Restaura o botão, ocorrendo sucesso ou falha
-            analyzeButton.disabled = false;
             analyzeButton.textContent = 'Analisar E-mail';
+            analyzeButton.disabled = false;
         }
     });
 
-    // Lógica do botão "Copiar"
+    // --- Lógica de Copiar ---
     copyButton.addEventListener('click', () => {
-        const textToCopy = suggestionResult.textContent;
-        const tempTextarea = document.createElement('textarea');
-        tempTextarea.value = textToCopy;
-        document.body.appendChild(tempTextarea);
-        tempTextarea.select();
-        try {
-            document.execCommand('copy');
-            alert('Resposta copiada para a área de transferência!');
-        } catch (err) {
-            console.error('Falha ao copiar texto: ', err);
-        }
-        document.body.removeChild(tempTextarea);
+        navigator.clipboard.writeText(suggestionResult.textContent).then(() => {
+            copyIcon.classList.add('hidden');
+            checkIcon.classList.remove('hidden');
+            setTimeout(() => {
+                copyIcon.classList.remove('hidden');
+                checkIcon.classList.add('hidden');
+            }, 1500);
+        });
     });
 });

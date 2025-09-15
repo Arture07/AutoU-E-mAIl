@@ -6,35 +6,60 @@
     <title>AutoU E-mAIl - Analisador Inteligente</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .drag-area-border {
-            border-color: #4a5568;
+        body {
+            font-family: 'Inter', sans-serif;
         }
-        .drag-area-border-hover {
-            border-color: #2563eb;
+        .autou-gradient-text {
+            background-image: linear-gradient(to right, #8b5cf6, #d946ef, #f97316);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .autou-gradient-bg {
+            background-image: linear-gradient(to right, #8b5cf6, #d946ef, #f97316);
+        }
+        .drag-area-border-active {
+            border-color: #8b5cf6;
+        }
+        /* Animação para a seção de resultados */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
         }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-200 flex items-center justify-center min-h-screen font-sans">
+<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
 
-    <main class="w-full max-w-2xl mx-auto p-4">
+    <main class="w-full max-w-2xl mx-auto">
         <!-- Card Principal da Aplicação -->
-        <div class="bg-gray-800 rounded-xl shadow-2xl overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
             
             <!-- Cabeçalho -->
-            <div class="p-6 border-b border-gray-700">
-                <h1 class="text-2xl font-bold text-white">AutoU E-mAIl</h1>
-                <p class="text-gray-400 mt-1">Analisador Inteligente de E-mails</p>
+            <div class="p-6 text-center border-b border-gray-100">
+                <!-- Logo da AutoU -->
+                <img src="https://www.autou.io/_next/image?url=%2Flogo-autou.png&w=384&q=75" alt="Logo da AutoU" class="h-10 w-auto mx-auto mb-4">
+                <h1 class="text-2xl font-light text-gray-800">Analisador Inteligente de E-mails</h1>
+                <p class="text-base text-gray-500 mt-1">
+                    Inteligência que transforma complexidade em <span class="font-medium autou-gradient-text">vantagem competitiva</span>.
+                </p>
             </div>
 
             <!-- Corpo do Card -->
             <div class="p-6">
                 <!-- Abas de Navegação -->
-                <div class="flex border-b border-gray-700 mb-6">
-                    <button id="tab-text" class="px-4 py-2 text-white border-b-2 border-blue-500 font-semibold">
+                <div class="flex border-b border-gray-200 mb-6">
+                    <button id="tab-text" class="px-4 py-2 text-violet-600 border-b-2 border-violet-600 font-semibold transition-colors duration-300">
                         Colar E-mail
                     </button>
-                    <button id="tab-file" class="px-4 py-2 text-gray-400 font-medium">
+                    <button id="tab-file" class="px-4 py-2 text-gray-500 font-medium hover:text-violet-600 transition-colors duration-300">
                         Anexar Arquivo
                     </button>
                 </div>
@@ -43,21 +68,18 @@
                 <div>
                     <!-- Aba de Inserção de Texto -->
                     <div id="content-text">
-                        <label for="email-text" class="block text-sm font-medium text-gray-300 mb-2">
-                            Cole o conteúdo do e-mail abaixo:
-                        </label>
-                        <textarea id="email-text" rows="8" class="w-full p-3 bg-gray-900 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="Assunto: Status do Projeto X..."></textarea>
+                        <textarea id="email-text" rows="8" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition duration-200 text-gray-800 placeholder-gray-400" placeholder="Assunto:"></textarea>
                     </div>
 
                     <!-- Aba de Upload de Arquivo -->
                     <div id="content-file" class="hidden">
-                        <label for="file-upload" class="block text-sm font-medium text-gray-300 mb-2">
-                            Arraste e solte um arquivo (.txt ou .pdf) ou clique para selecionar:
-                        </label>
-                        <div id="drag-area" class="flex justify-center items-center w-full h-48 border-2 border-dashed drag-area-border rounded-md cursor-pointer transition duration-200">
-                            <div class="text-center">
-                                <p class="text-gray-400">Arraste seu arquivo aqui</p>
-                                <p id="file-name" class="text-sm text-blue-400 mt-1"></p>
+                        <div id="drag-area" class="flex justify-center items-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-violet-500 transition-colors duration-300 bg-gray-50">
+                            <div id="drag-area-content" class="text-center text-gray-500">
+                                <!-- Ícone de Upload -->
+                                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                                <p class="mt-2">Arraste e solte ou <span class="font-semibold text-violet-600">clique para selecionar</span></p>
+                                <p class="text-xs mt-1">Suporta: .txt e .pdf</p>
+                                <p id="file-name" class="text-sm text-violet-700 font-medium mt-2"></p>
                             </div>
                             <input type="file" id="file-upload" class="hidden" accept=".txt,.pdf">
                         </div>
@@ -65,40 +87,48 @@
                 </div>
 
                 <!-- Botão de Ação -->
-                <div class="mt-6">
-                    <button id="analyze-button" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-blue-500 transition duration-200">
+                <div class="mt-8">
+                    <button id="analyze-button" class="w-full autou-gradient-bg text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 transition-all duration-300 shadow-lg shadow-violet-500/20">
                         Analisar E-mail
                     </button>
                 </div>
             </div>
 
             <!-- Seção de Resultados -->
-            <div id="result-section" class="p-6 border-t border-gray-700 hidden">
-                <h2 class="text-xl font-semibold text-white mb-4">Resultado da Análise</h2>
+            <div id="result-section" class="p-6 border-t border-gray-100 hidden">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Resultado da Análise</h2>
                 
                 <!-- Classificação -->
                 <div>
-                    <h3 class="font-bold text-gray-400">CLASSIFICAÇÃO:</h3>
-                    <p id="classification-result" class="text-lg font-medium text-white bg-gray-700/50 px-3 py-2 rounded-md mt-1"></p>
+                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider">Classificação</h3>
+                    <p id="classification-result" class="text-lg font-medium text-gray-900 bg-gray-100 px-3 py-2 rounded-md mt-1"></p>
                 </div>
 
                 <!-- Resposta Sugerida -->
-                <div class="mt-4">
-                    <h3 class="font-bold text-gray-400">SUGESTÃO DE RESPOSTA:</h3>
-                    <div class="relative">
-                        <p id="suggestion-result" class="text-base text-gray-200 bg-gray-900 p-3 rounded-md mt-1 whitespace-pre-wrap"></p>
-                        <button id="copy-button" class="absolute top-2 right-2 text-gray-400 hover:text-white" title="Copiar resposta">
-                            <!-- Ícone SVG de Copiar -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                <div class="mt-5">
+                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider">Sugestão de Resposta</h3>
+                    <div class="relative mt-1">
+                        <p id="suggestion-result" class="text-base text-gray-700 bg-gray-50 border border-gray-200 p-3 rounded-md whitespace-pre-wrap pr-10"></p>
+                        <button id="copy-button" class="absolute top-2 right-2 text-gray-400 hover:text-violet-600 transition-colors duration-200" title="Copiar resposta">
+                            <span id="copy-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                            </span>
+                             <span id="check-icon" class="hidden text-green-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                            </span>
                         </button>
                     </div>
                 </div>
             </div>
 
         </div>
+        <footer class="text-center mt-6">
+            <p class="text-xs text-gray-400">
+                Projeto desenvolvido por Artur Kuzma Marques para o Case Prático da AutoU.
+            </p>
+        </footer>
     </main>
 
-    <!-- Link para o arquivo JavaScript externo -->
     <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
 
 </body>
