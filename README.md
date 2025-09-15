@@ -26,7 +26,7 @@ A aplicação classifica os e-mails em duas categorias principais:
 **Frontend:**  
 - HTML5  
 - Tailwind CSS  
-- JavaScript (Vanilla)  
+- JavaScript  
 
 **Backend:**  
 - Python 3  
