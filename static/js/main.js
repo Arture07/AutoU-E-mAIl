@@ -76,42 +76,66 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Lógica do botão "Analisar" (com dados mock)
-    analyzeButton.addEventListener('click', () => {
+    // Lógica do botão "Analisar" com chamada ao backend
+    analyzeButton.addEventListener('click', async () => {
         const emailContent = emailTextarea.value;
         const isTextTabActive = !contentText.classList.contains('hidden');
+        let textToAnalyze = '';
 
-        if (isTextTabActive && !emailContent.trim()) {
-            alert('Por favor, cole o conteúdo do e-mail.');
+        if (isTextTabActive) {
+            if (!emailContent.trim()) {
+                alert('Por favor, cole o conteúdo do e-mail.');
+                return;
+            }
+            textToAnalyze = emailContent.trim();
+        } else {
+            // A análise de arquivos será implementada futuramente
+            if (!uploadedFile) {
+                alert('Por favor, selecione um arquivo.');
+                return;
+            }
+            alert('A análise de arquivos ainda não foi implementada. Por favor, use a aba de texto.');
             return;
         }
-        if (!isTextTabActive && !uploadedFile) {
-            alert('Por favor, selecione um arquivo.');
-            return;
-        }
 
-        // Simula estado de carregamento
+        // Ativa o estado de carregamento
         analyzeButton.disabled = true;
         analyzeButton.textContent = 'Analisando...';
         resultSection.classList.add('hidden');
         
-        // Simula uma chamada de API
-        setTimeout(() => {
-            // Exibe resultados mock
-            classificationResult.textContent = 'Produtivo';
-            suggestionResult.textContent = 'Olá!\n\nRecebemos sua solicitação e já estamos trabalhando nela. Você receberá uma atualização sobre o status em breve.\n\nAtenciosamente,\nA Equipe AutoU';
+        try {
+            // Faz a chamada (fetch) para o endpoint /analyze no backend
+            const response = await fetch('/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: textToAnalyze }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Ocorreu um erro no servidor.');
+            }
+
+            const result = await response.json();
+            
+            // Atualiza a interface com os dados recebidos do backend
+            classificationResult.textContent = result.classification;
+            suggestionResult.textContent = result.suggestion;
             resultSection.classList.remove('hidden');
 
-            // Restaura o botão
+        } catch (error) {
+            console.error('Erro ao analisar e-mail:', error);
+            alert(`Não foi possível concluir a análise: ${error.message}`);
+        } finally {
+            // Restaura o botão, ocorrendo sucesso ou falha
             analyzeButton.disabled = false;
             analyzeButton.textContent = 'Analisar E-mail';
-        }, 1500); // 1.5 segundos de simulação
+        }
     });
 
     // Lógica do botão "Copiar"
     copyButton.addEventListener('click', () => {
         const textToCopy = suggestionResult.textContent;
-        // Usa um textarea temporário para copiar o texto
         const tempTextarea = document.createElement('textarea');
         tempTextarea.value = textToCopy;
         document.body.appendChild(tempTextarea);
