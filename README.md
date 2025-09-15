@@ -9,8 +9,6 @@ A aplicação classifica os e-mails em duas categorias principais:
 - **Produtivo**: E-mails que demandam uma ação ou resposta direta.  
 - **Improdutivo**: Mensagens que não necessitam de uma ação imediata, como agradecimentos ou felicitações.  
 
-> Esta ferramenta foi projetada para liberar o tempo da equipe, eliminando a necessidade de triagem manual e permitindo foco em tarefas de maior valor.  
-
 ---
 
 ## ✨ Funcionalidades Principais  
@@ -73,3 +71,5 @@ GEMINI_API_KEY="SUA_CHAVE_DE_API_AQUI"
 ```bash
 flask run
 ```
+<br>
+*Projeto desenvolvido por Artur Kuzma Marques como parte do Case Prático da AutoU.*
