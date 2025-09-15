@@ -78,24 +78,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Lógica do botão "Analisar" com chamada ao backend
     analyzeButton.addEventListener('click', async () => {
-        const emailContent = emailTextarea.value;
         const isTextTabActive = !contentText.classList.contains('hidden');
-        let textToAnalyze = '';
+        let requestBody;
+        let requestHeaders = {};
 
         if (isTextTabActive) {
+            const emailContent = emailTextarea.value;
             if (!emailContent.trim()) {
                 alert('Por favor, cole o conteúdo do e-mail.');
                 return;
             }
-            textToAnalyze = emailContent.trim();
+            requestHeaders['Content-Type'] = 'application/json';
+            requestBody = JSON.stringify({ text: emailContent.trim() });
         } else {
-            // A análise de arquivos será implementada futuramente
             if (!uploadedFile) {
                 alert('Por favor, selecione um arquivo.');
                 return;
             }
-            alert('A análise de arquivos ainda não foi implementada. Por favor, use a aba de texto.');
-            return;
+            // Para upload de arquivo, usamos FormData
+            const formData = new FormData();
+            formData.append('file', uploadedFile);
+            requestBody = formData;
+            // NÃO definimos Content-Type aqui, o navegador faz isso
         }
 
         // Ativa o estado de carregamento
@@ -107,8 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Faz a chamada (fetch) para o endpoint /analyze no backend
             const response = await fetch('/analyze', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: textToAnalyze }),
+                headers: requestHeaders,
+                body: requestBody,
             });
 
             if (!response.ok) {
