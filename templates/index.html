@@ -50,7 +50,7 @@
                         <textarea id="email-text" rows="8" class="w-full p-3 bg-gray-900 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="Assunto: Status do Projeto X..."></textarea>
                     </div>
 
-                    <!-- Aba de Upload de Arquivo (inicialmente oculta via JS no futuro) -->
+                    <!-- Aba de Upload de Arquivo -->
                     <div id="content-file" class="hidden">
                         <label for="file-upload" class="block text-sm font-medium text-gray-300 mb-2">
                             Arraste e solte um arquivo (.txt ou .pdf) ou clique para selecionar:
@@ -98,6 +98,9 @@
 
         </div>
     </main>
+
+    <!-- Link para o arquivo JavaScript externo -->
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
 
 </body>
 </html>
