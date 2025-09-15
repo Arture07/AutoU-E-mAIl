@@ -71,29 +71,45 @@ def index():
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
+    # Adicionando logs para depuração
+    print("\n--- Nova Requisição /analyze ---")
+    print(f"Content-Type: {request.content_type}")
+    print(f"É JSON? {request.is_json}")
+    print(f"Arquivos na requisição: {list(request.files.keys())}")
+
     email_text = ""
     # Verifica se a requisição é JSON (para a aba de texto)
     if request.is_json:
+        print("-> Rota: Requisição identificada como JSON.")
         data = request.get_json()
         email_text = data.get('text', '')
     # Verifica se a requisição contém um arquivo (para a aba de anexo)
     elif 'file' in request.files:
+        print("-> Rota: Requisição identificada com um arquivo.")
         file = request.files['file']
         if file.filename == '':
+            print("-> Erro: Nenhum arquivo selecionado (nome do arquivo vazio).")
             return jsonify({'error': 'Nenhum arquivo selecionado.'}), 400
+        
+        print(f"-> Info: Processando arquivo '{file.filename}'")
         email_text = extract_text_from_file(file)
         if email_text is None:
+            print("-> Erro: Não foi possível extrair texto do arquivo.")
             return jsonify({'error': 'Não foi possível ler o arquivo. Verifique o formato.'}), 400
     else:
+        print("-> Erro: Formato de requisição inválido (nem JSON, nem arquivo).")
         return jsonify({'error': 'Formato de requisição inválido.'}), 400
 
-    if not email_text:
+    if not email_text.strip():
+        print("-> Erro: Texto do e-mail está vazio após o processamento.")
         return jsonify({'error': 'Nenhum texto de e-mail fornecido.'}), 400
 
-    print(f"Texto recebido para análise: '{email_text[:100]}...'")
+    print(f"-> Sucesso: Enviando texto para a IA: '{email_text[:100]}...'")
     ai_response = call_gemini_api(email_text)
 
     if "error" in ai_response:
         return jsonify(ai_response), 500
     
+    print("-> Sucesso: Análise concluída.")
+    print("---------------------------------\n")
     return jsonify(ai_response)
