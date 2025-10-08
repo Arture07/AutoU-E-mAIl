@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sobre • InboxFlox</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="bg-gray-50">
+  <header class="bg-white/95 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-100">
+    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3">
+        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Logo InboxFlox" class="h-9 w-9" />
+        <span class="text-lg font-semibold text-gray-800 hidden sm:inline">Inbox<span class="brand-gradient-text font-bold">Flox</span></span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm text-gray-600">
+        <a href="/" class="hover:text-brand-primary transition">Analisador</a>
+        <a href="/sobre" class="hover:text-brand-primary transition font-semibold">Sobre</a>
+      </nav>
+      <div class="flex items-center gap-3">
+        <a href="https://github.com/Arture07/AutoU-E-mAIl" target="_blank" class="inline-block px-4 py-2 rounded-lg font-semibold brand-gradient-bg text-white shadow-md transform hover:-translate-y-0.5 transition text-sm">GitHub</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 py-12 md:py-16">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Sobre o InboxFlox</h1>
+    <p class="text-gray-600 leading-relaxed mb-8">O <strong>InboxFlox</strong> é uma ferramenta demonstrativa para acelerar a triagem de e-mails: você fornece o conteúdo (texto ou arquivo) e recebe instantaneamente uma classificação e uma resposta de rascunho. Focado em mostrar como integrar modelo generativo + parsing robusto + fallback local.</p>
+
+    <div class="grid md:grid-cols-3 gap-8 mb-12">
+      <div class="bg-white border border-gray-200 rounded-xl p-5">
+        <h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Objetivo</h2>
+        <p class="text-sm text-gray-600">Diminuir o tempo gasto em leitura inicial e rascunho de respostas operacionais.</p>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-xl p-5">
+        <h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Pipeline</h2>
+        <p class="text-sm text-gray-600">Upload/Texto → Pré-processa → Chamada Gemini → Extração segura de JSON → Exibição + Copiar.</p>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-xl p-5">
+        <h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Fallback</h2>
+        <p class="text-sm text-gray-600">Se a API falha, regras simples mantêm a experiência fluida.</p>
+      </div>
+    </div>
+
+    <h2 class="text-lg font-semibold text-gray-800 mb-3">Detalhes Técnicos</h2>
+    <ul class="list-disc list-inside text-sm text-gray-600 space-y-1 mb-8">
+      <li>Flask + fetch API (sem framework front pesado).</li>
+      <li>Parsing resiliente de JSON da resposta (remoção de trechos extras / correção de aspas).</li>
+      <li>Extração de texto de PDF com PyMuPDF.</li>
+      <li>Fallback por regras de palavras-chave.</li>
+    </ul>
+
+    <h2 class="text-lg font-semibold text-gray-800 mb-3">Limitações</h2>
+    <ul class="list-disc list-inside text-sm text-gray-600 space-y-1 mb-8">
+      <li>Classificação binária simplificada.</li>
+      <li>Respostas genéricas — ideal refinar antes de enviar.</li>
+      <li>Sem armazenamento ou histórico (foco em demonstração).</li>
+    </ul>
+
+    <h2 class="text-lg font-semibold text-gray-800 mb-3">Possíveis Evoluções</h2>
+    <ul class="list-disc list-inside text-sm text-gray-600 space-y-1 mb-10">
+      <li>Adicionar categorias extras (Follow-up / Spam / Ação urgente).</li>
+      <li>Autenticação + histórico de análises.</li>
+      <li>Exportar lote de resultados em CSV.</li>
+      <li>Dark mode e tema custom.</li>
+    </ul>
+
+    <p class="text-xs text-gray-400">Projeto de portfólio criado por Artur Kuzma Marques – uso livre para estudo.</p>
+  </main>
+
+  <footer class="text-center mt-12 mb-6">
+    <p class="text-xs text-gray-400">© 2025 InboxFlox</p>
+  </footer>
+</body>
+</html>

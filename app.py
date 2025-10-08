@@ -208,6 +208,10 @@ Analise o texto do e-mail abaixo e retorne **UNICAMENTE** um objeto JSON com dua
 def index():
     return render_template('index.html')
 
+@app.route('/sobre')
+def sobre():
+    return render_template('sobre.html')
+
 @app.route('/analyze', methods=['POST'])
 def analyze():
     """Endpoint principal que recebe texto ou arquivo e retorna a análise."""

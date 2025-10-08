@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoU E-mAIl - Analisador Inteligente</title>
+    <title>InboxFlox - Analisador Inteligente</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,31 +12,31 @@
 </head>
 <body class="bg-gray-50">
 
-    <header class="bg-white/95 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-100">
-      <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-        <a href="#" class="flex items-center gap-3">
-          <img src="https://www.autou.io/_next/image?url=%2Flogo-autou.png&w=384&q=75" alt="Logo da AutoU" class="h-9 w-auto">
-          <span class="text-lg font-semibold text-gray-800 hidden sm:inline">AutoU E-m<span class="autou-gradient-text font-bold">A</span><span class="autou-gradient-text font-bold">I</span>l</span>
-        </a>
-        <nav class="hidden md:flex items-center gap-6 text-sm text-gray-600">
-          <a href="#analisador" class="hover:text-violet-600 transition">Analisador</a>
-          <a href="https://www.autou.io" target="_blank" class="hover:text-violet-600 transition">Sobre a AutoU</a>
-        </nav>
-        <div class="flex items-center gap-3">
-          <a href="https://github.com/Arture07/AutoU-E-mAIl" target="_blank" class="inline-block px-4 py-2 rounded-lg font-semibold autou-gradient-bg text-white shadow-md transform hover:-translate-y-0.5 transition text-sm">Ver no GitHub</a>
-        </div>
-      </div>
-    </header>
+        <header class="bg-white/95 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-100">
+            <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+                <a href="#" class="flex items-center gap-3">
+                    <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Logo InboxFlox" class="h-9 w-9" />
+                    <span class="text-lg font-semibold text-gray-800 hidden sm:inline">Inbox<span class="brand-gradient-text font-bold">Flox</span></span>
+                </a>
+                <nav class="hidden md:flex items-center gap-6 text-sm text-gray-600">
+                    <a href="#analisador" class="hover:text-brand-primary transition">Analisador</a>
+                    <a href="/sobre" class="hover:text-brand-primary transition">Sobre</a>
+                </nav>
+                <div class="flex items-center gap-3">
+                    <a href="https://github.com/Arture07/AutoU-E-mAIl" target="_blank" class="inline-block px-4 py-2 rounded-lg font-semibold brand-gradient-bg text-white shadow-md transform hover:-translate-y-0.5 transition text-sm">GitHub</a>
+                </div>
+            </div>
+        </header>
 
     <main id="analisador" class="w-full max-w-2xl mx-auto p-4 py-12 md:py-16">
         <!-- Card Principal da Aplicação -->
         <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
             
             <!-- Cabeçalho do Card -->
-            <div class="p-6 text-center border-b border-gray-100">
-                <h1 class="text-2xl font-bold text-gray-800">Analisador Inteligente de E-mails</h1>
+            <div class="p-6 text-center border-b border-gray-100 bg-gradient-to-b from-white to-gray-50">
+                <h1 class="text-2xl font-bold text-gray-800">InboxFlox – Classificação & Resposta</h1>
                 <p class="text-base text-gray-500 mt-1">
-                    Inteligência que transforma complexidade em <span class="font-medium autou-gradient-text">vantagem competitiva</span>.
+                    Extraia rapidamente a <span class="font-medium brand-gradient-text">classificação</span> e uma <span class="font-medium brand-gradient-text">resposta sugerida</span> para qualquer e-mail corporativo.
                 </p>
             </div>
 
@@ -44,10 +44,10 @@
             <div class="p-6">
                 <!-- Abas de Navegação -->
                 <div class="flex border-b border-gray-200 mb-6">
-                    <button id="tab-text" class="px-4 py-2 text-violet-600 border-b-2 border-violet-600 font-semibold transition-colors duration-300">
+                    <button id="tab-text" class="px-4 py-2 text-brand-primary border-b-2 border-brand-primary font-semibold transition-colors duration-300">
                         Colar E-mail
                     </button>
-                    <button id="tab-file" class="px-4 py-2 text-gray-500 font-medium hover:text-violet-600 transition-colors duration-300">
+                    <button id="tab-file" class="px-4 py-2 text-gray-500 font-medium hover:text-brand-primary transition-colors duration-300">
                         Anexar Arquivo
                     </button>
                 </div>
@@ -56,15 +56,15 @@
                 <div>
                     <!-- Aba de Inserção de Texto -->
                     <div id="content-text">
-                        <textarea id="email-text" rows="8" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition duration-200 text-gray-800 placeholder-gray-400" placeholder="Insira o texto completo do e-mail que deseja classificar."></textarea>
+                        <textarea id="email-text" rows="8" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-primary/60 focus:border-brand-primary transition duration-200 text-gray-800 placeholder-gray-400" placeholder="Insira o texto completo do e-mail que deseja classificar."></textarea>
                     </div>
 
                     <!-- Aba de Upload de Arquivo -->
                     <div id="content-file" class="hidden">
-                        <div id="drag-area" class="flex justify-center items-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-violet-500 transition-colors duration-300 bg-gray-50">
+                        <div id="drag-area" class="flex justify-center items-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-brand-primary transition-colors duration-300 bg-gray-50">
                             <div id="drag-area-content" class="text-center text-gray-500">
                                 <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                                <p class="mt-2">Arraste e solte ou <span class="font-semibold text-violet-600">clique para selecionar</span></p>
+                                <p class="mt-2">Arraste e solte ou <span class="font-semibold text-brand-primary">clique para selecionar</span></p>
                                 <p class="text-xs mt-1">Suporta: .txt e .pdf</p>
                                 <p id="file-name" class="text-sm text-violet-700 font-medium mt-2"></p>
                             </div>
@@ -75,7 +75,7 @@
 
                 <!-- Botão de Analisar -->
                 <div class="mt-8">
-                    <button id="analyze-button" class="w-full autou-gradient-bg text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 transition-all duration-300 transform hover:-translate-y-0.5">
+                    <button id="analyze-button" class="w-full brand-gradient-bg text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary/60 transition-all duration-300 transform hover:-translate-y-0.5">
                         Analisar E-mail
                     </button>
                 </div>
@@ -107,10 +107,8 @@
             </div>
 
         </div>
-        <footer class="text-center mt-8">
-            <p class="text-xs text-gray-400">
-                Projeto desenvolvido por Artur Kuzma Marques para o Case Prático da AutoU.
-            </p>
+        <footer class="text-center mt-12 mb-4">
+            <p class="text-xs text-gray-400">© 2025 InboxFlox</p>
         </footer>
     </main>
 

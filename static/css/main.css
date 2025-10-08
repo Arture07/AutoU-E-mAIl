@@ -1,27 +1,29 @@
 :root {
-    --autou-violet: #8b5cf6;
-    --autou-magenta: #d946ef;
-    --autou-orange: #f97316;
+    --brand-primary: #6366f1; /* Indigo 500 */
+    --brand-accent: #a855f7;  /* Purple 500 */
+    --brand-warm: #f59e0b;    /* Amber 500 */
 }
 
 body {
     font-family: 'Inter', sans-serif;
 }
 
-.autou-gradient-text {
-    background-image: linear-gradient(to right, var(--autou-violet), var(--autou-magenta), var(--autou-orange));
+/* Gradient textual genérico */
+.brand-gradient-text {
+    background-image: linear-gradient(to right, var(--brand-primary), var(--brand-accent), var(--brand-warm));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
 }
 
-.autou-gradient-bg {
-    background-image: linear-gradient(to right, var(--autou-violet), var(--autou-magenta), var(--autou-orange));
-    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15);
+/* Botões / elementos com fundo gradiente */
+.brand-gradient-bg {
+    background-image: linear-gradient(to right, var(--brand-primary), var(--brand-accent), var(--brand-warm));
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.18);
 }
 
 .drag-area-border-active {
-    border-color: var(--autou-violet);
+    border-color: var(--brand-primary);
 }
 
 @keyframes fadeIn {

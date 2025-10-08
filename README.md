@@ -1,9 +1,9 @@
-# AutoU E-mAIl - Analisador Inteligente de E-mails  
+# InboxFlox - Analisador Inteligente de E-mails  
 
 ## 📄 Sobre o Projeto  
 
-O **AutoU E-mAIl** é uma solução web desenvolvida como parte de um desafio técnico para a empresa AutoU.  
-O objetivo é otimizar a gestão de e-mails em um ambiente corporativo de alto volume, utilizando Inteligência Artificial para automatizar a classificação de mensagens e sugerir respostas adequadas.  
+O **InboxFlox** é uma ferramenta demonstrativa de portfólio para triagem rápida de e-mails.  
+O objetivo é otimizar a gestão de e-mails corporativos de alto volume, utilizando um modelo generativo para automatizar a classificação e sugerir respostas iniciais.  
 
 A aplicação classifica os e-mails em duas categorias principais:  
 - **Produtivo**: E-mails que demandam uma ação ou resposta direta.  
@@ -73,4 +73,4 @@ flask run
 ```
 <br> 
 
-*Projeto desenvolvido por Artur Kuzma Marques como parte do Case Prático da AutoU.*
+*Projeto de portfólio desenvolvido por Artur Kuzma Marques (InboxFlox).* 
