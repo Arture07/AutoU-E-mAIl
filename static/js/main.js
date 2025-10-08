@@ -23,11 +23,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Troca de Abas ---
     const setActiveTab = (activeTab, inactiveTab) => {
-        activeTab.classList.add('text-violet-600', 'border-violet-600', 'border-b-2', 'font-semibold');
-        activeTab.classList.remove('text-gray-500', 'font-medium');
-
-        inactiveTab.classList.add('text-gray-500', 'font-medium');
-        inactiveTab.classList.remove('text-violet-600', 'border-violet-600', 'border-b-2', 'font-semibold');
+        activeTab.classList.add('tab-active');
+        activeTab.classList.remove('tab-inactive');
+        inactiveTab.classList.add('tab-inactive');
+        inactiveTab.classList.remove('tab-active');
     };
 
     tabText.addEventListener('click', () => {

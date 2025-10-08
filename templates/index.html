@@ -1,118 +1,88 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InboxFlox - Analisador Inteligente</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-</head>
-<body class="bg-gray-50">
+{% extends 'base.html' %}
+{% block title %}InboxFlox • Analisador{% endblock %}
+{% block content %}
+<section class="mb-10 text-center">
+    <h1 class="text-3xl md:text-4xl font-semibold tracking-tight mb-3">Classifique e Responda E-mails em Segundos</h1>
+    <p class="text-gray-600 max-w-2xl mx-auto">Cole ou envie um arquivo e receba uma classificação objetiva (Produtivo / Improdutivo) mais um rascunho de resposta pronto para ajustar.</p>
+</section>
 
-        <header class="bg-white/95 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-100">
-            <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-                <a href="#" class="flex items-center gap-3">
-                    <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Logo InboxFlox" class="h-9 w-9" />
-                    <span class="text-lg font-semibold text-gray-800 hidden sm:inline">Inbox<span class="brand-gradient-text font-bold">Flox</span></span>
-                </a>
-                <nav class="hidden md:flex items-center gap-6 text-sm text-gray-600">
-                    <a href="#analisador" class="hover:text-brand-primary transition">Analisador</a>
-                    <a href="/sobre" class="hover:text-brand-primary transition">Sobre</a>
-                </nav>
-                <div class="flex items-center gap-3">
-                    <a href="https://github.com/Arture07/AutoU-E-mAIl" target="_blank" class="inline-block px-4 py-2 rounded-lg font-semibold brand-gradient-bg text-white shadow-md transform hover:-translate-y-0.5 transition text-sm">GitHub</a>
-                </div>
+<div class="grid lg:grid-cols-3 gap-8 items-start">
+    <!-- Form Card -->
+    <div class="lg:col-span-2 bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden">
+        <div class="px-6 pt-6 pb-4 border-b border-gray-100">
+            <h2 class="text-lg font-semibold">Analisador</h2>
+        </div>
+        <div class="p-6">
+            <div class="flex gap-4 mb-5 border-b border-gray-200">
+                <button id="tab-text" class="tab-btn tab-active">Colar E-mail</button>
+                <button id="tab-file" class="tab-btn tab-inactive">Anexar Arquivo</button>
             </div>
-        </header>
-
-    <main id="analisador" class="w-full max-w-2xl mx-auto p-4 py-12 md:py-16">
-        <!-- Card Principal da Aplicação -->
-        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
-            
-            <!-- Cabeçalho do Card -->
-            <div class="p-6 text-center border-b border-gray-100 bg-gradient-to-b from-white to-gray-50">
-                <h1 class="text-2xl font-bold text-gray-800">InboxFlox – Classificação & Resposta</h1>
-                <p class="text-base text-gray-500 mt-1">
-                    Extraia rapidamente a <span class="font-medium brand-gradient-text">classificação</span> e uma <span class="font-medium brand-gradient-text">resposta sugerida</span> para qualquer e-mail corporativo.
-                </p>
+            <div id="content-text">
+                <textarea id="email-text" rows="8" class="input-textarea" placeholder="Cole aqui o corpo completo do e-mail..."></textarea>
             </div>
-
-            <!-- Corpo do Card -->
-            <div class="p-6">
-                <!-- Abas de Navegação -->
-                <div class="flex border-b border-gray-200 mb-6">
-                    <button id="tab-text" class="px-4 py-2 text-brand-primary border-b-2 border-brand-primary font-semibold transition-colors duration-300">
-                        Colar E-mail
-                    </button>
-                    <button id="tab-file" class="px-4 py-2 text-gray-500 font-medium hover:text-brand-primary transition-colors duration-300">
-                        Anexar Arquivo
-                    </button>
-                </div>
-
-                <!-- Conteúdo das Abas -->
-                <div>
-                    <!-- Aba de Inserção de Texto -->
-                    <div id="content-text">
-                        <textarea id="email-text" rows="8" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-primary/60 focus:border-brand-primary transition duration-200 text-gray-800 placeholder-gray-400" placeholder="Insira o texto completo do e-mail que deseja classificar."></textarea>
+            <div id="content-file" class="hidden">
+                <div id="drag-area" class="upload-zone">
+                    <div class="text-center">
+                        <svg class="mx-auto h-10 w-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        <p class="mt-2 text-sm">Arraste e solte ou <span class="font-medium text-brand-primary">clique para selecionar</span></p>
+                        <p class="text-xs text-gray-500">Formatos .txt ou .pdf até 5MB</p>
+                        <p id="file-name" class="text-xs font-medium text-brand-primary mt-1"></p>
                     </div>
-
-                    <!-- Aba de Upload de Arquivo -->
-                    <div id="content-file" class="hidden">
-                        <div id="drag-area" class="flex justify-center items-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-brand-primary transition-colors duration-300 bg-gray-50">
-                            <div id="drag-area-content" class="text-center text-gray-500">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                                <p class="mt-2">Arraste e solte ou <span class="font-semibold text-brand-primary">clique para selecionar</span></p>
-                                <p class="text-xs mt-1">Suporta: .txt e .pdf</p>
-                                <p id="file-name" class="text-sm text-violet-700 font-medium mt-2"></p>
-                            </div>
-                            <input type="file" id="file-upload" class="hidden" accept=".txt,.pdf">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Botão de Analisar -->
-                <div class="mt-8">
-                    <button id="analyze-button" class="w-full brand-gradient-bg text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary/60 transition-all duration-300 transform hover:-translate-y-0.5">
-                        Analisar E-mail
-                    </button>
+                    <input type="file" id="file-upload" class="hidden" accept=".txt,.pdf" />
                 </div>
             </div>
-
-            <!-- Seção de Resultados -->
-            <div id="result-section" class="p-6 border-t border-gray-100 hidden">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Resultado da Análise</h2>
-                
+            <div class="mt-6">
+                <button id="analyze-button" class="btn btn-accent w-full">Analisar</button>
+            </div>
+        </div>
+        <div id="result-section" class="px-6 pt-2 pb-6 border-t border-gray-100 hidden">
+            <h3 class="text-sm font-semibold text-gray-700 mb-3">Resultado</h3>
+            <div class="space-y-5">
                 <div>
-                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider">Classificação</h3>
-                    <p id="classification-result" class="text-lg font-medium text-gray-900 bg-gray-100 px-3 py-2 rounded-md mt-1"></p>
+                    <span class="label">Classificação</span>
+                    <p id="classification-result" class="result-badge"></p>
                 </div>
-
-                <div class="mt-5">
-                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider">Sugestão de Resposta</h3>
+                <div>
+                    <span class="label">Sugestão de Resposta</span>
                     <div class="relative mt-1">
-                        <p id="suggestion-result" class="text-base text-gray-700 bg-gray-50 border border-gray-200 p-3 rounded-md whitespace-pre-wrap pr-10"></p>
-                        <button id="copy-button" class="absolute top-2 right-2 text-gray-400 hover:text-violet-600 transition-colors duration-200" title="Copiar resposta">
+                        <p id="suggestion-result" class="suggestion-box"></p>
+                        <button id="copy-button" class="copy-btn" title="Copiar resposta">
                             <span id="copy-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
                             </span>
-                             <span id="check-icon" class="hidden text-green-500">
+                            <span id="check-icon" class="hidden text-green-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                             </span>
                         </button>
                     </div>
                 </div>
             </div>
-
         </div>
-        <footer class="text-center mt-12 mb-4">
-            <p class="text-xs text-gray-400">© 2025 InboxFlox</p>
-        </footer>
-    </main>
+    </div>
 
-    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
-
-</body>
-</html>
+    <!-- Side Panel -->
+    <aside class="space-y-6">
+        <div class="info-card">
+            <h3>Como Funciona</h3>
+            <ul class="list-disc list-inside text-xs text-gray-600 leading-relaxed mt-2 space-y-1">
+                <li>Limpeza e normalização do texto</li>
+                <li>Chamada ao modelo (Gemini)</li>
+                <li>Extração robusta de JSON</li>
+                <li>Fallback local se a IA falhar</li>
+            </ul>
+        </div>
+        <div class="info-card">
+            <h3>Status</h3>
+            <p class="text-xs text-gray-600 mt-2">O resultado aparece assim que a resposta é processada. Você pode copiar a sugestão para ajustar antes de enviar.</p>
+        </div>
+        <div class="info-card">
+            <h3>Limitações</h3>
+            <ul class="list-disc list-inside text-xs text-gray-600 mt-2 space-y-1">
+                <li>Classificação binária simples</li>
+                <li>Sem histórico salvo</li>
+                <li>Resposta é um rascunho</li>
+            </ul>
+        </div>
+    </aside>
+</div>
+{% endblock %}

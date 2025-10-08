@@ -1,30 +1,66 @@
 :root {
-    --brand-primary: #6366f1; /* Indigo 500 */
-    --brand-accent: #a855f7;  /* Purple 500 */
-    --brand-warm: #f59e0b;    /* Amber 500 */
+    --brand-primary: #5b21b6; /* Roxo profundo */
+    --brand-accent: #059669;  /* Verde esmeralda */
+    --brand-primary-soft: #ede9fe; /* Fundo leve roxo */
+    --brand-accent-soft: #d1fae5;  /* Fundo leve verde */
+    --brand-border: #e5e7eb;
 }
 
 body {
     font-family: 'Inter', sans-serif;
 }
 
-/* Gradient textual genérico */
-.brand-gradient-text {
-    background-image: linear-gradient(to right, var(--brand-primary), var(--brand-accent), var(--brand-warm));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
+/* Texto destacado (cores sólidas) */
+.brand-text-primary { color: var(--brand-primary); }
+.brand-text-accent { color: var(--brand-accent); }
 
-/* Botões / elementos com fundo gradiente */
-.brand-gradient-bg {
-    background-image: linear-gradient(to right, var(--brand-primary), var(--brand-accent), var(--brand-warm));
-    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.18);
-}
+/* Buttons */
+.btn { display:inline-flex;align-items:center;justify-content:center;font-weight:500;border-radius:0.5rem;transition:all .18s;box-shadow:0 1px 2px rgba(0,0,0,.05);position:relative;cursor:pointer;padding:.75rem 1.25rem;font-size:.95rem; }
+.btn:focus{outline:2px solid var(--brand-primary);outline-offset:2px;}
+.btn:disabled{opacity:.6;cursor:not-allowed;}
+.btn-sm{height:2.25rem;padding:0 1rem;font-size:.8rem;}
+.btn-accent{background:var(--brand-accent);color:#fff;}
+.btn-accent:hover{filter:brightness(1.05);} 
+.btn-primary{background:var(--brand-primary);color:#fff;}
+.btn-primary:hover{filter:brightness(1.05);} 
 
-.drag-area-border-active {
-    border-color: var(--brand-primary);
-}
+/* Tabs */
+.tab-btn{position:relative;padding:.5rem .75rem .75rem .75rem;font-size:.85rem;font-weight:500;transition:color .18s;}
+.tab-active{color:var(--brand-primary);} 
+.tab-active::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--brand-primary);} 
+.tab-inactive{color:#6b7280;} 
+.tab-inactive:hover{color:var(--brand-primary);} 
+
+/* Inputs */
+.input-textarea{width:100%;padding:.75rem;background:#f9fafb;border:1px solid #d1d5db;border-radius:.5rem;transition:border-color .18s,box-shadow .18s;font-size:.85rem;min-height:200px;resize:vertical;} 
+.input-textarea:focus{outline:none;border-color:var(--brand-primary);box-shadow:0 0 0 2px rgba(91,33,182,.25);} 
+
+/* Upload */
+.upload-zone{display:flex;justify-content:center;align-items:center;width:100%;height:11rem;border:2px dashed #d1d5db;border-radius:.75rem;cursor:pointer;transition:border-color .2s;background:#f9fafb;padding:0 1rem;} 
+.upload-zone:hover{border-color:var(--brand-primary);} 
+
+/* Result elements */
+.label{display:block;font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;margin-bottom:.25rem;}
+.result-badge{display:inline-block;background:#f3f4f6;padding:.5rem .75rem;border-radius:.5rem;font-size:.8rem;font-weight:500;color:#1f2937;}
+.suggestion-box{font-size:.8rem;color:#374151;background:#f9fafb;border:1px solid #e5e7eb;padding:.75rem;border-radius:.5rem;white-space:pre-wrap;padding-right:2.5rem;}
+.copy-btn{position:absolute;top:.5rem;right:.5rem;color:#9ca3af;transition:color .18s;}
+.copy-btn:hover{color:var(--brand-primary);} 
+
+/* Info cards */
+.info-card{background:#fff;border:1px solid #e5e7eb;border-radius:.85rem;padding:1.25rem;box-shadow:0 2px 4px rgba(0,0,0,.03);} 
+
+/* Utility shadows */
+.brand-shadow { box-shadow: 0 4px 14px rgba(91,33,182,0.18); }
+.brand-shadow-accent { box-shadow: 0 4px 14px rgba(5,150,105,0.25); }
+
+/* Botões / elementos com fundo sólido */
+.brand-bg-primary { background-color: var(--brand-primary); color: #fff; }
+.brand-bg-accent { background-color: var(--brand-accent); color: #fff; }
+.brand-pill { border-radius: 0.65rem; }
+.brand-shadow { box-shadow: 0 6px 18px rgba(91, 33, 182, 0.25); }
+.brand-shadow-accent { box-shadow: 0 6px 18px rgba(5, 150, 105, 0.25); }
+
+.drag-area-border-active { border-color: var(--brand-primary); }
 
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
