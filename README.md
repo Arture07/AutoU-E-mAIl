@@ -66,6 +66,12 @@ Acesse o Google AI Studio para gerar sua chave gratuita.
 Abra o arquivo .env e cole sua chave de API:
 ```bash
 GEMINI_API_KEY="SUA_CHAVE_DE_API_AQUI"
+# Opcional: escolha do modelo (padrão: gemini-2.5-flash)
+# Dicas:
+# - Para melhor qualidade, use: gemini-2.5-pro
+# - Para menor latência/custo, use: gemini-2.5-flash
+# - Evite o sufixo "-latest" pois pode não estar disponível em algumas versões da API
+GEMINI_MODEL="gemini-2.5-flash"
 ```
 ### 🔹 4. Rode a Aplicação
 ```bash
@@ -74,3 +80,17 @@ flask run
 <br> 
 
 *Projeto de portfólio desenvolvido por Artur Kuzma Marques (InboxFlox).* 
+
+---
+
+## 🔧 Respostas Estruturadas em JSON (opcional)
+
+A API foi configurada para solicitar respostas diretamente em JSON, usando um schema que contém:
+- classification: "Produtivo" | "Improdutivo"
+- suggestion: string
+
+Benefícios:
+- Reduz erros de parsing e elimina formatações Markdown acidentais.
+- Garante chaves obrigatórias.
+
+Para desativar ou alterar, edite `app.py` em `generation_config` dentro de `call_gemini_api`.

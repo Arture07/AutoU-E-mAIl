@@ -4,6 +4,7 @@ import json
 import logging
 from time import sleep
 from flask import Flask, render_template, request, jsonify
+from flask import redirect, url_for
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 import google.generativeai as genai
@@ -18,14 +19,39 @@ app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 ALLOWED_EXTENSIONS = {'txt', 'pdf'}
 
 api_key = os.getenv("GEMINI_API_KEY")
+default_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash").strip()
+if default_model.endswith("-latest"):
+    # Alias "-latest" pode não existir na API v1beta; remove para garantir compatibilidade
+    logger.warning("GEMINI_MODEL termina com '-latest'. Ajustando para o nome base sem '-latest'.")
+    default_model = default_model[:-7]
 if api_key:
     try:
         genai.configure(api_key=api_key)
-        logger.info("Gemini API configurada.")
+        logger.info("Gemini API configurada. Modelo padrão: %s", default_model)
     except Exception as e:
         logger.exception("Erro ao configurar Gemini SDK: %s", e)
 else:
     logger.warning("GEMINI_API_KEY não encontrada.")
+
+# ---------- SUPORTE A MODELOS ----------
+def list_generative_models():
+    """Retorna lista de modelos que suportam geração de conteúdo."""
+    try:
+        models = genai.list_models()
+        names = []
+        for m in models:
+            methods = getattr(m, 'supported_generation_methods', None) or getattr(m, 'generation_methods', None) or []
+            if any(method in ("generateContent", "generate_content") for method in methods):
+                name = getattr(m, 'name', '')
+                if name.startswith('models/'):
+                    name = name.split('/', 1)[1]
+                if name:
+                    names.append(name)
+        logger.info("Modelos generativos disponíveis: %s", names)
+        return names
+    except Exception as e:
+        logger.warning("Falha ao listar modelos: %s", e)
+        return []
 
 # ---------- UTILITÁRIOS ----------
 def allowed_file(filename: str) -> bool:
@@ -180,24 +206,119 @@ Analise o texto do e-mail abaixo e retorne **UNICAMENTE** um objeto JSON com dua
 {text}
 ---
 """
-    model = genai.GenerativeModel('gemini-1.5-flash-latest')
+    # Configuração para forçar saída JSON estruturada (se suportado pelo modelo/SDK)
+    generation_config = {
+        "response_mime_type": "application/json",
+        "response_schema": {
+            "type": "object",
+            "properties": {
+                "classification": {
+                    "type": "string",
+                    "enum": ["Produtivo", "Improdutivo"]
+                },
+                "suggestion": {"type": "string"}
+            },
+            "required": ["classification", "suggestion"]
+        }
+    }
 
-    for attempt in range(2):
+    # Tenta o modelo configurado e um(s) alternativo(s) caso o primeiro falhe
+    candidate_models = [default_model, "gemini-2.5-pro", "gemini-1.5-pro"]
+
+    for model_name in candidate_models:
         try:
-            logger.info(f"Enviando prompt para Gemini (tentativa {attempt + 1}/2)...")
-            response = model.generate_content(prompt)
-            raw_text = getattr(response, "text", str(response)).strip()
-            logger.debug("Resposta bruta da IA: %s", raw_text[:500])
-
-            ai_json = extract_json_from_text(raw_text)
-            if ai_json and 'classification' in ai_json and 'suggestion' in ai_json:
-                return ai_json
-            else:
-                raise ValueError("JSON parseado é inválido ou não contém chaves esperadas.")
+            # Tenta instanciar já com generation_config (pode falhar em SDKs mais antigos ou modelos não compatíveis)
+            model = genai.GenerativeModel(model_name, generation_config=generation_config)
         except Exception as e:
-            logger.warning(f"Tentativa {attempt + 1}/2 de chamar Gemini falhou: {e}")
-            if attempt < 1:
-                sleep(0.5)
+            logger.info("Instanciação com schema falhou para '%s' (%s). Tentando sem schema.", model_name, e)
+            try:
+                model = genai.GenerativeModel(model_name)
+            except Exception as e2:
+                logger.warning("Falha ao instanciar modelo '%s': %s", model_name, e2)
+                continue
+
+        for attempt in range(2):
+            try:
+                logger.info(f"Enviando prompt para Gemini (modelo {model_name}, tentativa {attempt + 1}/2)...")
+                # Primeiro tenta com config no generate_content (para SDKs que preferem passar por chamada)
+                try:
+                    response = model.generate_content(prompt, generation_config=generation_config)
+                except Exception:
+                    response = model.generate_content(prompt)
+
+                raw_text = getattr(response, "text", str(response)).strip()
+                logger.debug("Resposta bruta da IA: %s", raw_text[:500])
+
+                # Caminho rápido: se já for JSON puro, parse direto
+                try:
+                    ai_json = json.loads(raw_text)
+                except Exception:
+                    ai_json = extract_json_from_text(raw_text)
+                if ai_json and 'classification' in ai_json and 'suggestion' in ai_json:
+                    return ai_json
+                else:
+                    raise ValueError("JSON parseado é inválido ou não contém chaves esperadas.")
+            except Exception as e:
+                logger.warning(
+                    "Tentativa %s/2 de chamar Gemini com modelo '%s' falhou: %s",
+                    attempt + 1, model_name, e
+                )
+                if attempt < 1:
+                    sleep(0.5)
+
+    # Última tentativa: descobrir modelos disponíveis e tentar automaticamente
+    available = list_generative_models()
+    if available:
+        # ordena priorizando 2.5-flash, 2.5-pro, 2.0-flash, 1.5-flash, 1.5-pro
+        def order_key(n: str):
+            if '2.5-flash' in n:
+                return (0, n)
+            if '2.5-pro' in n:
+                return (1, n)
+            if '2.0-flash' in n:
+                return (2, n)
+            if '1.5-flash' in n:
+                return (3, n)
+            if '1.5-pro' in n:
+                return (4, n)
+            return (9, n)
+        ordered = sorted(set(available), key=order_key)
+        for model_name in ordered:
+            try:
+                model = genai.GenerativeModel(model_name, generation_config=generation_config)
+            except Exception as e:
+                logger.info("Instanciação com schema falhou para '%s' (%s). Tentando sem schema.", model_name, e)
+                try:
+                    model = genai.GenerativeModel(model_name)
+                except Exception as e2:
+                    logger.warning("Falha ao instanciar modelo '%s': %s", model_name, e2)
+                    continue
+            for attempt in range(2):
+                try:
+                    logger.info(
+                        f"Enviando prompt para Gemini (modelo {model_name}, tentativa {attempt + 1}/2 - descoberta)..."
+                    )
+                    try:
+                        response = model.generate_content(prompt, generation_config=generation_config)
+                    except Exception:
+                        response = model.generate_content(prompt)
+                    raw_text = getattr(response, "text", str(response)).strip()
+                    # Caminho rápido: se já for JSON puro, parse direto
+                    try:
+                        ai_json = json.loads(raw_text)
+                    except Exception:
+                        ai_json = extract_json_from_text(raw_text)
+                    if ai_json and 'classification' in ai_json and 'suggestion' in ai_json:
+                        return ai_json
+                    else:
+                        raise ValueError("JSON parseado é inválido ou não contém chaves esperadas.")
+                except Exception as e:
+                    logger.warning(
+                        "Tentativa %s/2 de chamar Gemini com modelo '%s' (descoberta) falhou: %s",
+                        attempt + 1, model_name, e
+                    )
+                    if attempt < 1:
+                        sleep(0.5)
 
     logger.error("Todas as tentativas de chamar a API Gemini falharam.")
     return {"error": "Falha na IA após múltiplas tentativas."}
@@ -253,6 +374,11 @@ def analyze():
 def healthz():
     """Endpoint de health check."""
     return jsonify({'status': 'ok'}), 200
+
+@app.route('/favicon.ico')
+def favicon():
+    # Redireciona para o favicon baseado no logo.svg
+    return redirect(url_for('static', filename='img/logo.svg'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
